@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Application</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Connect to the server
+    const socket = io();
+
+    // Handle form submission
+    function handleSubmit(event) {
+      event.preventDefault();
+      const input = document.getElementById('message-input');
+      const message = input.value.trim();
+
+      if (message !== '') {
+        // Send chat message to the server
+        socket.emit('chat message', message);
+        input.value = '';
+      }
+    }
+
+    // Handle received chat messages
+    socket.on('chat', (msg) => {
+      const messagesContainer = document.getElementById('messages-container');
+      const newMessage = document.createElement('li');
+      newMessage.textContent = msg;
+      messagesContainer.appendChild(newMessage);
+    });
+    socket.on('join', (msg) => {
+      const messagesContainer = document.getElementById('messages-container');
+      const newMessage = document.createElement('li');
+      newMessage.textContent = "Join ["+msg+"]";
+      messagesContainer.appendChild(newMessage);
+    });
+    socket.on('off', (msg) => {
+      const messagesContainer = document.getElementById('messages-container');
+      const newMessage = document.createElement('li');
+      newMessage.textContent = "Leave ["+msg+"]";
+      messagesContainer.appendChild(newMessage);
+    });
+  </script>
+</head>
+<body>
+  <ul id="messages-container"></ul>
+  <form id="message-form" onsubmit="handleSubmit(event)">
+    <input id="message-input" type="text" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+</body>
+</html>
